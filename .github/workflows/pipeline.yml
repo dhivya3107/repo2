@@ -1,28 +1,18 @@
 name: CI
+
 # Controls when the workflow will run on pushs
 on:
   # Triggers the workflow on push or pull request events but only for the main branch 
   push:
     branches: 
-      - crm-dev
-      - crm-sit
+      - test1
   pull_request:
     types: [closed]
     branches: 
-      - crm-uat
-      - crm-prod
+      - uat
+      - prod
       # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
   Build:
-    uses: unobankasia/pipeline/.github/workflows/ci.yaml@crm-d
-    secrets: inherit
-    with: 
-      REGION: "ap-southeast-1"
-      ASSUME_ROLE: "arn:aws:iam::325910447219:role/cross-account-role-iexceed"
-      ASSUME_ROLE_PROD: "arn:aws:iam::009373914419:role/cross-account-iexceed-prod"
-      PLATFORM_REPO: "unobank-app-platform"
-      MAVEN_HOME: "/opt/apache-maven-3.8.4"
-      JAVA_HOME: "/usr/lib/jvm/java-11-openjdk-amd64/"
-      MICROSERVICES: ${{ github.event.repository.name }}
-      EXCLUDED_CLASS: "src/test/**"
+    uses: dhivya3107/dhivyapipeline/.github/workflows/pipeline.yml@pipe
