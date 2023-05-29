@@ -6,25 +6,34 @@ on:
   # Triggers the workflow on push or pull request events but only for the main branch 
   push:
     branches: 
-      - crm-dev
-      - crm-sit
-  pull_request: 
-    types: [closed]
-    branches: 
-      - crm-uat
-      - crm-prod
-      # A workflow run is made up of one or more jobs that can run sequentially or in parallel
+      - dev-test
+      
 jobs:
   # This workflow contains a single job called "build"
-  Build:
-    uses: unobankasia/pipeline/.github/workflows/ci.yaml@crm-d
-    secrets: inherit
-    with: 
-      REGION: "ap-southeast-1"
-      ASSUME_ROLE: "arn:aws:iam::325910447219:role/cross-account-role-iexceed"
-      ASSUME_ROLE_PROD: "arn:aws:iam::009373914419:role/cross-account-iexceed-prod"
-      PLATFORM_REPO: "unobank-app-platform"
-      MAVEN_HOME: "/opt/apache-maven-3.8.4"
-      JAVA_HOME: "/usr/lib/jvm/java-11-openjdk-amd64/"
-      MICROSERVICES: ${{ github.event.repository.name }}
-      EXCLUDED_CLASS: "src/test/**"
+  CI:
+    # The type of runner that the job will run on  
+    runs-on: ubuntu-latest
+ 
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+      
+      - name: Setup Tag for image and branch
+        run: |
+         IMAGE_TAG="$(echo $GITHUB_SHA | cut -c 1-6)" 
+          echo "$IMAGE_TAG"
+          
+      - name: Update Image tag 
+        run: |          
+          git clone https://github.com/dhivya3107/repo1.git -b dev-test
+          cd repo1
+          git checkout dev-test
+          sed -i 's/tag.*/tag: "${{env.IMAGE_TAG}}"/' values.yaml
+          git add values.yaml
+          git commit -m "updated with ${{env.IMAGE_TAG}}"
+          git push -u origin dev-test
+       
+      
+
+
